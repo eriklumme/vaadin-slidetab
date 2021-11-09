@@ -45,7 +45,6 @@ public class SlideTab extends PolymerTemplate<SlideTab.SlideTabModel> implements
     private int animationDuration;
     private int zIndex;
 
-    private Timer timer = new Timer();
     private TabTask currentTask;
 
     public SlideTab(SlideTabBuilder builder) {
@@ -321,11 +320,7 @@ public class SlideTab extends PolymerTemplate<SlideTab.SlideTabModel> implements
      * @param delayMillis millis in future the task will happen
      */
     public void scheduleExpand(final boolean value, final boolean animated, final int delayMillis) {
-        if (currentTask != null) {
-            currentTask.cancel();
-        }
-        currentTask = new TabTask(() -> setExpanded(value, animated));
-        timer.schedule(currentTask, delayMillis);
+        scheduleInternal(delayMillis, () -> setExpanded(value, animated));
     }
 
     /**
@@ -335,11 +330,7 @@ public class SlideTab extends PolymerTemplate<SlideTab.SlideTabModel> implements
      * @param delayMillis millis in future the task will happen
      */
     public void scheduleToggle(final int delayMillis) {
-        if (currentTask != null) {
-            currentTask.cancel();
-        }
-        currentTask = new TabTask(this::toggle);
-        timer.schedule(currentTask, delayMillis);
+        scheduleInternal(delayMillis, this::toggle);
     }
 
     /**
@@ -349,11 +340,7 @@ public class SlideTab extends PolymerTemplate<SlideTab.SlideTabModel> implements
      * @param delayMillis millis in future the task will happen
      */
     public void scheduleCollapse(final int delayMillis) {
-        if (currentTask != null) {
-            currentTask.cancel();
-        }
-        currentTask = new TabTask(this::collapse);
-        timer.schedule(currentTask, delayMillis);
+        scheduleInternal(delayMillis, this::collapse);
     }
 
     /**
@@ -363,11 +350,28 @@ public class SlideTab extends PolymerTemplate<SlideTab.SlideTabModel> implements
      * @param delayMillis millis in future the task will happen
      */
     public void scheduleExpand(final int delayMillis) {
+        scheduleInternal(delayMillis, this::expand);
+    }
+
+    /**
+     * Utility method for scheduling timer based tasks.
+     *
+     * @param delayMillis millis in future the task will happen
+     * @param command the command which must be scheduled
+     */
+    private void scheduleInternal(int delayMillis, Command command) {
         if (currentTask != null) {
             currentTask.cancel();
         }
-        currentTask = new TabTask(this::expand);
-        timer.schedule(currentTask, delayMillis);
+        Timer timer = new Timer();
+        TabTask newTask = new TabTask(command, () -> {
+            timer.cancel();
+            currentTask = null;
+        });
+        timer.schedule(newTask, delayMillis);
+        // save the task so that we can cancel it later if
+        // another schedule event happens
+        this.currentTask = newTask;
     }
 
     /**
@@ -396,16 +400,27 @@ public class SlideTab extends PolymerTemplate<SlideTab.SlideTabModel> implements
      */
     private class TabTask extends TimerTask {
 
-        private Command command;
+        private final Command command;
+        private final Runnable cleanup;
 
-        private TabTask(Command command) {
+        private TabTask(Command command, Runnable cleanup) {
             this.command = command;
+            this.cleanup = cleanup;
         }
 
         @Override
         public void run() {
             getUI().ifPresent(ui -> ui.access(command));
+            cleanup.run();
         }
+
+        @Override
+        public boolean cancel() {
+            boolean result = super.cancel();
+            cleanup.run();
+            return result;
+        }
+
     }
 
     public interface SlideTabModel extends TemplateModel {
