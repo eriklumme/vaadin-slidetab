@@ -410,15 +410,20 @@ public class SlideTab extends PolymerTemplate<SlideTab.SlideTabModel> implements
 
         @Override
         public void run() {
-            getUI().ifPresent(ui -> ui.access(command));
-            cleanup.run();
+            try {
+                getUI().ifPresent(ui -> ui.access(command));
+            } finally {
+                cleanup.run();
+            }
         }
 
         @Override
         public boolean cancel() {
-            boolean result = super.cancel();
-            cleanup.run();
-            return result;
+            try {
+                return super.cancel();
+            } finally {
+                cleanup.run();
+            }
         }
 
     }
