@@ -190,9 +190,11 @@ class SlideTab extends ThemableMixin(PolymerElement) {
     }
 
     _onOutsideClick(event) {
-        if (!this._isChildElement(event.target)) {
-            this.$server.onOutsideClicked();
-        }
+    	this.$server.isClosingOnOutsideClick().then(result => {
+    		if (result && !this._isChildElement(event.target)) {
+    			this.$server.onOutsideClicked();
+    		}
+    	});
     }
 
     _isChildElement(element) {

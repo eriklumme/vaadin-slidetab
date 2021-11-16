@@ -219,6 +219,7 @@ public class SlideTab extends PolymerTemplate<SlideTab.SlideTabModel> implements
     /**
      * Returns if the panel should close when clicking outside it
      */
+    @ClientCallable
     public boolean isClosingOnOutsideClick() {
         return autoCollapsing;
     }
