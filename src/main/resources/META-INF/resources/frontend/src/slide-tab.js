@@ -190,9 +190,9 @@ class SlideTab extends ThemableMixin(PolymerElement) {
     }
 
     _onOutsideClick(event) {
-        if (!this._isChildElement(event.target)) {
-            this.$server.onOutsideClicked();
-        }
+    	if (this.isClosingOnOutsideClickEnabled && !this._isChildElement(event.target)) {
+    		this.$server.onOutsideClicked();
+    	}
     }
 
     _isChildElement(element) {
@@ -231,6 +231,11 @@ class SlideTab extends ThemableMixin(PolymerElement) {
         super.disconnectedCallback();
         document.body.removeEventListener("click", this.outsideClickListener);
     }
+    
+    setClosingOnOutsideClick(enabled) {
+    	this.isClosingOnOutsideClickEnabled = enabled;
+    }
+    
 }
 
 customElements.define(SlideTab.is, SlideTab);
