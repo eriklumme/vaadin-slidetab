@@ -100,7 +100,7 @@ public class SlideTab extends PolymerTemplate<SlideTab.SlideTabModel> implements
     }
 
     private void doExpand() {
-        getElement().callFunction("expand", pixelSize, slideMode.isVertical());
+        getElement().callJsFunction("expand", pixelSize, slideMode.isVertical());
     }
 
     /**
@@ -118,7 +118,7 @@ public class SlideTab extends PolymerTemplate<SlideTab.SlideTabModel> implements
     private void collapse(boolean fromClient) {
         if(expanded && toggleEnabled) {
             expanded = false;
-            getElement().callFunction("collapse", slideMode.isVertical());
+            getElement().callJsFunction("collapse", slideMode.isVertical());
             fireEvent(new SlideToggleEvent(this, fromClient, false));
         }
     }
@@ -214,6 +214,10 @@ public class SlideTab extends PolymerTemplate<SlideTab.SlideTabModel> implements
      */
     public void setClosingOnOutsideClick(boolean autoCollapsing) {
         this.autoCollapsing = autoCollapsing;
+        setElementClosingOnOutsideClick();
+    }
+
+    private void setElementClosingOnOutsideClick() {
         getElement().callJsFunction("setClosingOnOutsideClick", autoCollapsing);
     }
 
@@ -408,6 +412,7 @@ public class SlideTab extends PolymerTemplate<SlideTab.SlideTabModel> implements
         if (expanded) {
             doExpand();
         }
+        setElementClosingOnOutsideClick();
     }
 
 }

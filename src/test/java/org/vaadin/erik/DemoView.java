@@ -15,6 +15,7 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouterLink;
 
 @CssImport("./styles/demo-styles.css")
 @CssImport(value = "./styles/demo-slide-tab-styles.css", themeFor = "slide-tab")
@@ -80,13 +81,15 @@ public class DemoView extends Div {
             tabToControl.scheduleToggle(getIntValue(delayField));
         });
 
-        container.add(durationField, delayField, scheduleExpand, scheduleCollapse, scheduleToggle, scheduleOptions, checkBoxWrapper);
+        RouterLink navigateAway = new RouterLink("Navigate away", OtherView.class);
+
+        container.add(durationField, delayField, scheduleExpand, scheduleCollapse, scheduleToggle, scheduleOptions, checkBoxWrapper, navigateAway);
     }
 
     private int getIntValue(TextField field) {
         try {
             field.setErrorMessage(null);
-            return Integer.valueOf(field.getValue());
+            return Integer.parseInt(field.getValue());
         } catch (NumberFormatException e) {
             field.setErrorMessage("Not an integer");
             return 0;
@@ -134,7 +137,7 @@ public class DemoView extends Div {
         content.setId("right-panel-bottom-content");
 
         SlideTab slideTab = new SlideTabBuilder(content, "Grid")
-                .mode(SlideMode.RIGHT).tabPosition(SlideTabPosition.BEGINNING).build();
+                .mode(SlideMode.RIGHT).autoCollapseSlider(true).tabPosition(SlideTabPosition.BEGINNING).build();
 
         Grid<Test> testGrid = new Grid<>(Test.class);
         testGrid.setItems(Arrays.asList(
@@ -148,6 +151,7 @@ public class DemoView extends Div {
                 new Test("Hhhh", "Hhhhhhhh", "hhh@hhh.com", 7)
         ));
 
+        content.add("This panel closes on outside click");
         content.add(testGrid);
 
         return slideTab;

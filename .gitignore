@@ -5,3 +5,4 @@ target
 /webpack.generated.js
 pnpmfile.js
 .npmrc
+package-lock.json

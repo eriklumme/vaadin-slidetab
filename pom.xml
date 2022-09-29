@@ -5,12 +5,12 @@
 
     <groupId>org.vaadin.erik</groupId>
     <artifactId>slidetab</artifactId>
-    <version>3.0.2</version>
+    <version>3.0.3</version>
     <name>SlideTab</name>
     <description>A tab that when clicked slides out a panel</description>
 
     <properties>
-        <vaadin.version>14.5.4</vaadin.version>
+        <vaadin.version>14.8.18</vaadin.version>
 
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
